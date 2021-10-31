@@ -3,18 +3,15 @@ title: "Global Climate Change Analysis Proposal"
 output: html_document
 ---
 
-``{r setup, include=FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-### Team members: GaJin Kim, Jayant Shah
-### Dataset Link: 
+***
 
-### Overview:
-- 
+**Team members:** GaJin Kim, Jayant Shah
 
-### Plan for exploratory analysis:
-- 
-- 
-- 
-- 
-- 
+**Dataset Links:** https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data?bbox=40.965,-74.257,40.465,-73.757&startDate=2018-01-01T23:59:59&endDate=2022-01-01T00:00:00&stations=74486094789, https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data?bbox=42.085,-93.680,41.965,-93.560&startDate=2018-01-01T23:59:59&endDate=2022-01-01T00:00:00
+
+**Overview:** Comparing how the corona virus has affected global temperatures in different counties across the United States (years 2018 - 2021). The ones we will be analyzing in depth will be a suburban city: Ames, IA and a density populated urban city, New York City, NY. The data set contains over 100 different columns, however, we only plan to analyze 8 of them which are 'daily average relative humidity', 'daily departure from normal average temperature', 'hourly present data type', 'daily maximum dry bulb temperature', 'daily minimum dry bulb temperature', 'daily precipitation', 'monthly maximum temperature', and 'monthly mean temperature'. The combined dataset will include over a thousand rows (365 days over 4 years).
+
+**Plan for exploratory analysis:** 
