@@ -1,0 +1,21 @@
+---
+title: "Analysis of Covid-19 on Climate Change"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(measurements)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(ggmap)
+library(stringr)
+library(choroplethr)
+library(choroplethrMaps)
+library(lubridate)
+
+waterloo_clean <- read.csv('./datasets/Waterloo_Municipal_IowaClean.csv')
+nyc_clean <- read.csv('./datasets/Waterloo_Municipal_IowaClean.csv')
+```
