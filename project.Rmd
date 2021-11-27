@@ -82,5 +82,53 @@ rm(nyc_2021_clean)
 
 # Aggregate Waterloo Dataset
 ```{r}
+waterloo_2019_clean       <- waterloo_2019[-c(1, 3:11, 14:27, 29:36, 39:69, 72:74, 76:125)]
+waterloo_2019_clean$DATE  <- as.Date(waterloo_2019_clean$DATE)
+waterloo_2019_clean$Year  <- year(ymd(waterloo_2019_clean$DATE))
+waterloo_2019_clean$Month <- month(ymd(waterloo_2019_clean$DATE))
+waterloo_2019_clean$Day   <- day(ymd(waterloo_2019_clean$DATE))
 
+waterloo_2019_clean <- waterloo_2019_clean %>% relocate(HourlyPresentWeatherType, .after = Day) %>%
+                        relocate(HourlyPrecipitation, .after = HourlyPresentWeatherType) %>%
+                        relocate(Year, .after = DATE) %>% 
+                        relocate(Month, .after = Year) %>% 
+                        relocate(Day, .after = Month) %>%                                                              filter(!is.na(DailyAverageDryBulbTemperature) | !is.na(MonthlyMeanTemperature))
+waterloo_2020_clean       <- waterloo_2020[-c(1, 3:11, 14:27, 29:36, 39:69, 72:74, 76:125)]
+waterloo_2020_clean$DATE  <- as.Date(waterloo_2020_clean$DATE)
+waterloo_2020_clean$Year  <- year(ymd(waterloo_2020_clean$DATE))
+waterloo_2020_clean$Month <- month(ymd(waterloo_2020_clean$DATE))
+waterloo_2020_clean$Day   <- day(ymd(waterloo_2020_clean$DATE))
+
+waterloo_2020_clean <- waterloo_2020_clean %>% relocate(HourlyPresentWeatherType, .after = Day) %>%
+                        relocate(HourlyPrecipitation, .after = HourlyPresentWeatherType) %>%
+                        relocate(Year, .after = DATE) %>% 
+                        relocate(Month, .after = Year) %>% 
+                        relocate(Day, .after = Month) %>%                                                              filter(!is.na(DailyAverageDryBulbTemperature) | !is.na(MonthlyMeanTemperature))
+
+waterloo_2021_clean       <- waterloo_2021[-c(1, 3:11, 14:27, 29:36, 39:69, 72:74, 76:125)]
+waterloo_2021_clean$DATE  <- as.Date(waterloo_2021_clean$DATE)
+waterloo_2021_clean$Year  <- year(ymd(waterloo_2021_clean$DATE))
+waterloo_2021_clean$Month <- month(ymd(waterloo_2021_clean$DATE))
+waterloo_2021_clean$Day   <- day(ymd(waterloo_2021_clean$DATE))
+
+waterloo_2021_clean <- waterloo_2021_clean %>% relocate(HourlyPresentWeatherType, .after = Day) %>%
+                        relocate(HourlyPrecipitation, .after = HourlyPresentWeatherType) %>%
+                        relocate(Year, .after = DATE) %>% 
+                        relocate(Month, .after = Year) %>% 
+                        relocate(Day, .after = Month) %>%                                                              filter(!is.na(DailyAverageDryBulbTemperature) | !is.na(MonthlyMeanTemperature))
+
+waterloo_clean <- rbind(waterloo_2019_clean, waterloo_2020_clean, waterloo_2021_clean) # combine waterloo data sets
+
+
+waterloo_clean$`Month Formatted` <- factor(waterloo_clean$Month, levels = c(1,2,3,4,5,6,7,8,9,10,11,12), 
+                     labels = months)
+
+waterloo_clean <- waterloo_clean %>% relocate(`Month Formatted`, .after = Month)
+
+rm(waterloo_2019)
+rm(waterloo_2020)
+rm(waterloo_2021)
+rm(waterloo_2019_clean)
+rm(waterloo_2020_clean)
+rm(waterloo_2021_clean)
 ```
