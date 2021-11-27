@@ -1,0 +1,33 @@
+---
+title: "Analysis of Covid-19 on Climate Change"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(measurements)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(ggmap)
+library(stringr)
+library(choroplethr)
+library(choroplethrMaps)
+library(lubridate)
+
+waterloo <- read.csv('./datasets/Waterloo_Municipal_Iowa.csv')
+nyc <- read.csv('./datasets/JFK_International_NewYork.csv')
+```
+
+```{r}
+nyc_clean <- nyc[-c(1, 3:27, 29:36, 39:69, 72:74, 76:125)]
+nyc_clean$DATE  <- as.Date(nyc_clean$DATE)
+nyc_clean$Year  <- year(ymd(nyc_clean$DATE))
+nyc_clean$Month <- month(ymd(nyc_clean$DATE))
+nyc_clean$Day   <- day(ymd(nyc_clean$DATE))
+
+nyc_clean <- nyc_clean %>% relocate(Year, .after = DATE) %>% 
+                        relocate(Month, .after = Year) %>% 
+                        relocate(Day, .after = Month) %>%                                                         filter(!is.na(DailyAverageDryBulbTemperature))
+```
