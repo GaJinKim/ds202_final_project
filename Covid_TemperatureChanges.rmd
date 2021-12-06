@@ -1,0 +1,243 @@
+---
+title: "Temperature Changes due to COVID-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Question #1
+
+
+We have two datasets for two different cities: Waterloo and New York.
+
+To compare mean values of temperatures for pre-, during-, and post-quarantine periods, we divided data into three subsets by Year: Pre-Quarantine Period is year 2019, During-Quarantine Period is year 2020, and Post-Quarantine Period is year 2021.
+
+```{r}
+waterloo_clean <- read.csv('./datasets/Waterloo_Municipal_IowaClean.csv')
+nyc_clean <- read.csv('./datasets/JFK_International_NewYorkClean.csv')
+data_w<-split(waterloo_clean, waterloo_clean$Year)
+
+waterloo_pre<-data_w$`2019`
+waterloo_during<-data_w$`2020`
+waterloo_post<-data_w$`2021`
+
+w_pre_monthly<-waterloo_pre[!is.na(waterloo_pre$MonthlyMeanTemperature),]
+w_d_monthly<-waterloo_during[!is.na(waterloo_during$MonthlyMeanTemperature),]
+w_post_monthly<-waterloo_post[!is.na(waterloo_post$MonthlyMeanTemperature),]
+
+##For New York:
+data_nyc<-split(nyc_clean, nyc_clean$Year)
+
+nyc_pre<-data_nyc$`2019`
+nyc_during<-data_nyc$`2020`
+nyc_post<-data_nyc$`2021`
+
+nyc_pre_monthly<- nyc_pre[!is.na(nyc_pre$MonthlyMeanTemperature),]
+nyc_d_monthly<- nyc_during[!is.na(nyc_during$MonthlyMeanTemperature),]
+nyc_post_monthly<- nyc_post[!is.na(nyc_post$MonthlyMeanTemperature),]
+
+```
+We can see the summary information about average temperature in Waterloo by month for three years:
+```{r}
+w_summary<-round(cbind(summary(w_pre_monthly$MonthlyMeanTemperature), summary(w_d_monthly$MonthlyMeanTemperature), summary(w_post_monthly$MonthlyMeanTemperature)), 2)
+colnames(w_summary)=c("2019", "2020", "2021")
+print("Monthly Average Temperatyre in Waterloo for pre-, during-, and post- COVID period:")
+w_summary
+
+## For New York:
+nyc_summary<-round(cbind(summary(nyc_pre_monthly$MonthlyMeanTemperature), summary(nyc_d_monthly$MonthlyMeanTemperature), summary(nyc_post_monthly$MonthlyMeanTemperature)), 2)
+colnames(nyc_summary)=c("2019", "2020", "2021")
+print("Monthly Average Temperatyre in New York for pre-, during-, and post- COVID period:")
+nyc_summary
+
+```
+
+To compare Monthly Average Temperature for these three periods, we will plot the graph to see if there are any significant differences in the graphs:
+```{r}
+plot(w_pre_monthly$Month, w_pre_monthly$MonthlyMeanTemperature, type = "b", col= "red", xlab = "Month", ylab = "Average Temperature", main = "Average Monthly Temperature in Waterloo in years 2019 - 2021")
+lines(w_d_monthly$Month, w_d_monthly$MonthlyMeanTemperature, type = "b", col = "blue")
+lines(w_post_monthly$Month, w_post_monthly$MonthlyMeanTemperature, type = "b", col = "green")
+legend("topleft", legend = c(2019, 2020, 2021), col = c("red", "blue", "green"), lty = 1:2, cex = 0.8)
+
+## For New York
+plot(nyc_pre_monthly$Month, nyc_pre_monthly$MonthlyMeanTemperature, type = "b", col= "red", xlab = "Month", ylab = "Average Temperature", main = "Average Monthly Temperature in New York in years 2019 - 2021")
+lines(nyc_d_monthly$Month, nyc_d_monthly$MonthlyMeanTemperature, type = "b", col = "blue")
+lines(nyc_post_monthly$Month, nyc_post_monthly$MonthlyMeanTemperature, type = "b", col = "green")
+legend("topleft", legend = c(2019, 2020, 2021), col = c("red", "blue", "green"), lty = 1:2, cex = 0.8)
+```
+
+As we can see, we cannot say if there is a difference between the average monthly temperature in pre-, during-, and post-covid periods in Waterloo or New York. Thus, we heed to test hypothesis about the equivalence of mean values for these periods. We will use t-test:
+
+```{r}
+t_w1<-t.test(w_pre_monthly$MonthlyMeanTemperature,w_d_monthly$MonthlyMeanTemperature)
+t_w2<-t.test(w_pre_monthly$MonthlyMeanTemperature,w_post_monthly$MonthlyMeanTemperature)
+t_w3<-t.test(w_d_monthly$MonthlyMeanTemperature,w_post_monthly$MonthlyMeanTemperature)
+
+##Results:
+t_w1
+```
+As we can see, the p-value is 0.7754, which is greater than 0.05. It means that we cannot reject the null-hypothesis about equality of means. Thus, the true difference in means for pre-Covid and during-Covid period in Waterloo is equal to zero.
+```{r}
+t_w2
+```
+As we can see, the p-value is 0.541, which is greater than 0.05. It means that we cannot reject the null-hypothesis about equality of means. Thus, the true difference in means for pre-Covid and post-Covid period in Waterloo is equal to zero.
+```{r}
+t_w3
+```
+As we can see, the p-value is 0.7059, which is greater than 0.05. It means that we cannot reject the null-hypothesis about equality of means. Thus, the true difference in means for during-Covid and post-Covid period in Waterloo is equal to zero.
+
+#For New York, we have:
+```{r}
+t_ny1<-t.test(nyc_pre_monthly$MonthlyMeanTemperature,nyc_d_monthly$MonthlyMeanTemperature)
+t_ny2<-t.test(nyc_pre_monthly$MonthlyMeanTemperature,nyc_post_monthly$MonthlyMeanTemperature)
+t_ny3<-t.test(nyc_d_monthly$MonthlyMeanTemperature,nyc_post_monthly$MonthlyMeanTemperature)
+
+##Results:
+t_ny1
+```
+As we can see, the p-value is 0.8145, which is greater than 0.05. It means that we cannot reject the null-hypothesis about equality of means. Thus, the true difference in means for pre-Covid and during-Covid period in New York is equal to zero.
+
+```{r}
+t_ny2
+```
+As we can see, the p-value is 0.6132, which is greater than 0.05. It means that we cannot reject the null-hypothesis about equality of means. Thus, the true difference in means for pre-Covid and post-Covid period in New York is equal to zero.
+
+```{r}
+t_ny3
+```
+As we can see, the p-value is 0.7576, which is greater than 0.05. It means that we cannot reject the null-hypothesis about equality of means. Thus, the true difference in means for during-Covid and post-Covid period in New York is equal to zero.
+
+Thus, as we can see, the average monthly temperature in pre-, during-, and post-COVID periods does not have statistically significant difference, i.e. we may conclude that the average monthly temperature did not change significantly in COVID period both in Waterloo and New York.
+
+Question #2
+
+
+At first, we will use 'Year' variable as factor variable:
+```{r}
+nyc_clean$Year<-as.factor(nyc_clean$Year)
+```
+By using this data and 'Year' as factor, we can build a boxplot to see the average daily temperature in New York in years 2019 (pre-COVID time), 2020 (during-COVID time), and 2021 (post-COVID time):
+```{r}
+library(ggplot2)
+library(RColorBrewer)
+
+ggplot(data = nyc_clean, aes(y = DailyAverageDryBulbTemperature, x = Year), fill = "class") + 
+geom_boxplot()+
+xlab("Year")+
+ylab("Daily Average Temperature")+
+ggtitle("Daily Average Temperature in New York by Year (2019 - 2021)")
+
+```
+As we can see from the boxplot, we can assume that the average daily temperature in New York during COVID-19 has changed: it is slightly greater for year 2020 compared to 2019; it's greater for year 2021 compared to 2019 and 2020.
+The summary statistics:
+
+```{r}
+tapply(nyc_clean$DailyAverageDryBulbTemperature, nyc_clean$Year, function(x) format(summary(x)))
+```
+As we can see from the summary statistic, our assumption should be right. Let check it with t-test:
+```{r}
+tt_ny1<-t.test(nyc_pre$DailyAverageDryBulbTemperature, nyc_during$DailyAverageDryBulbTemperature)
+tt_ny2<-t.test(nyc_pre$DailyAverageDryBulbTemperature, nyc_post$DailyAverageDryBulbTemperature)
+tt_ny3<-t.test(nyc_during$DailyAverageDryBulbTemperature, nyc_post$DailyAverageDryBulbTemperature)
+```
+
+The results are:
+```{r}
+tt_ny1
+```
+
+As we can see, the p-value of the test is 0.2219, which is greater than 0.05. It means that at 95% confidence level, we cannot reject the null-hypothesis: the true difference in means is equal to zero. Thus, there is no difference in daily average temperature in New York in pre- and during-COVID periods.
+
+```{r}
+tt_ny2
+```
+
+As we can see, the p-vlue is 0.01615, which is lower than 0.05. Thus, we should reject the null-hypothesis about equality of means. Thus, there is a statistically significant difference in pre- and post- daily average temperature in New York. We can check if our assumption is true and the post-COVID average daily temperature is higher than in pre-COVID period in NY:
+
+```{r}
+tt_ny2_new<-t.test(nyc_post$DailyAverageDryBulbTemperature, nyc_pre$DailyAverageDryBulbTemperature, alternative = "greater")
+tt_ny2_new
+```
+
+As we can see, the p-value is 0.008075, which is lower than 0.05: we should reject the null-hypothesis. It means that the true difference in means between post-COVID daily average temperature and pre-COVID daily average temperature is greater than zero. Thus, the post-COVID daily average temperature is higher than the pre-COVID daily average temperature in New York.
+
+Let see what we have for during- and post-COVID daily average temperature difference:
+```{r}
+tt_ny3
+```
+
+As we can see, the p-value is 0.1869, which is greater than 0.05, which means that we cannot reject the null-hypothesis. Thus, the difference between the mean values for daily average temperature in during- and post-COVID periods are equal to zero. Thus, there is no statistically significant difference in daily average temperatures in during- and post-COVID periods.
+
+Thus, we can conclude that the post-COVID daily average temperature in New York is higher than in pre-COVID period, but it's not different from  during-COVID period. The daily average temperature in pre-COVID and during-COVID period are not significantly different.
+
+Question #3
+
+```{r}
+waterloo_clean$Year<-as.factor(waterloo_clean$Year)
+```
+
+By using this data and 'Year' as factor, we can build a boxplot to see the average daily temperature in Waterloo in years 2019 (pre-COVID time), 2020 (during-COVID time), and 2021 (post-COVID time):
+
+```{r}
+ggplot(data = waterloo_clean, aes(y = DailyAverageDryBulbTemperature, x = Year), fill = "class") + 
+geom_boxplot()+
+xlab("Year")+
+ylab("Daily Average Temperature")+
+ggtitle("Daily Average Temperature in Waterloo by Year (2019 - 2021)")
+
+```
+
+As we can see from the boxplot, we can assume that the average daily temperature in this city during COVID-19 has changed: it is slightly greater for year 2020 compared to 2019; it's greater for year 2021 compared to 2019 and slightly greater compared to year 2020.
+The summary statistics:
+
+```{r}
+tapply(waterloo_clean$DailyAverageDryBulbTemperature, waterloo_clean$Year, function(x) format(summary(x)))
+```
+As we can see from the summary statistic, our assumption should be right. Let check it with t-test:
+```{r}
+tt_w1<-t.test(waterloo_pre$DailyAverageDryBulbTemperature, waterloo_during$DailyAverageDryBulbTemperature)
+tt_w2<-t.test(waterloo_pre$DailyAverageDryBulbTemperature, waterloo_post$DailyAverageDryBulbTemperature)
+tt_w3<-t.test(waterloo_during$DailyAverageDryBulbTemperature, waterloo_post$DailyAverageDryBulbTemperature)
+```
+
+The results are:
+```{r}
+tt_w1
+```
+
+As we can see, the p-value of the test is 0.1414, which is greater than 0.05. It means that at 95% confidence level, we cannot reject the null-hypothesis: the true difference in means is equal to zero. Thus, there is no difference in daily average temperature in Waterloo in pre- and during-COVID periods.
+
+```{r}
+tt_w2
+```
+
+As we can see, the p-value is 0.002768, which is lower than 0.05. Thus, we should reject the null-hypothesis about equality of means. Thus, there is a statistically significant difference in pre- and post- daily average temperature in Waterloo. We can check if our assumption is true and the post-COVID average daily temperature is higher than in pre-COVID period in Waterloo:
+
+```{r}
+tt_w2_new<-t.test(waterloo_post$DailyAverageDryBulbTemperature, waterloo_pre$DailyAverageDryBulbTemperature, alternative = "greater")
+tt_w2_new
+```
+
+As we can see, the p-value is 0.001384, which is lower than 0.05: we should reject the null-hypothesis. It means that the true difference in means between post-COVID daily average temperature and pre-COVID daily average temperature is greater than zero. Thus, the post-COVID daily average temperature is higher than the pre-COVID daily average temperature in Waterloo.
+
+Let see what we have for during- and post-COVID daily average temperature difference:
+```{r}
+tt_w3
+```
+
+As we can see, the p-value is 0.08595, which is greater than 0.05. But it is lower than 0.1, which means that at 90% of confidence we can say that the mean values of daily average temperature for during- and post-COVID periods are different. We can check this:
+
+```{r}
+tt_w3_new<-t.test(waterloo_post$DailyAverageDryBulbTemperature, waterloo_during$DailyAverageDryBulbTemperature, alternative = "greater")
+tt_w3_new
+```
+
+As we can see, the p-value is 0.04297, which is lower than 0.05: we should reject the null-hypothesis. It means that the true difference in means between mean values of daily average temperature in post- and during-COVID period is greater than zero. Thus, the mean value of post-COVID daily average temperature is higher than the mean value of during-COVID daily average temperature in Waterloo.
+
+Thus, we can conclude that the post-COVID daily average temperature in Waterloo is higher than in pre-COVID and during-COVID periods. The daily average temperature in pre-COVID and during-COVID period is not significantly different.
+
+Question #4
+
+Based on the previous analysis, we can say that the quaranteen has not been effective in reducing daily mean temperature or average temperature in general. We can see, that post-COVID average daily temperature is higher than pre-COVID average daily temperature both for New York and waterloo. The reason that people during the COVID and in post-COVID period stay in their homes and use more electricity, cars, buy more food, etc.
